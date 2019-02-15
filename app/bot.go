@@ -136,7 +136,7 @@ func (a *App) UpdateBotOwner(botUserId, newOwnerId string) (*model.Bot, *model.A
 	}
 	bot := result.Data.(*model.Bot)
 
-	bot.CreatorId = newOwnerId
+	bot.OwnerId = newOwnerId
 
 	if result = <-a.Srv.Store.Bot().Update(bot); result.Err != nil {
 		return nil, result.Err
