@@ -30,8 +30,9 @@ import (
 )
 
 type TestHelper struct {
-	App    *app.App
-	Server *app.Server
+	App         *app.App
+	Server      *app.Server
+	ConfigStore config.Store
 
 	Client              *model.Client4
 	BasicUser           *model.User
@@ -77,8 +78,9 @@ func setupTestHelper(enterprise bool, updateConfig func(*model.Config)) *TestHel
 	}
 
 	th := &TestHelper{
-		App:    s.FakeApp(),
-		Server: s,
+		App:         s.FakeApp(),
+		Server:      s,
+		ConfigStore: memoryStore,
 	}
 
 	th.App.UpdateConfig(func(cfg *model.Config) {
