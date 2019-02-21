@@ -491,8 +491,8 @@ func TestDisableUserBots(t *testing.T) {
 	th := Setup(t).InitBasic()
 	defer th.TearDown()
 
-	creatorId1 := model.NewId()
-	creatorId2 := model.NewId()
+	ownerId1 := model.NewId()
+	ownerId2 := model.NewId()
 
 	bots := []*model.Bot{}
 	defer func() {
@@ -505,7 +505,7 @@ func TestDisableUserBots(t *testing.T) {
 		bot, err := th.App.CreateBot(&model.Bot{
 			Username:    fmt.Sprintf("username%v", i),
 			Description: "a bot",
-			CreatorId:   creatorId1,
+			OwnerId:     ownerId1,
 		})
 		require.Nil(t, err)
 		bots = append(bots, bot)
@@ -515,12 +515,12 @@ func TestDisableUserBots(t *testing.T) {
 	u2bot1, err := th.App.CreateBot(&model.Bot{
 		Username:    "username_nodisable",
 		Description: "a bot",
-		CreatorId:   creatorId2,
+		OwnerId:     ownerId2,
 	})
 	require.Nil(t, err)
 	defer th.App.PermanentDeleteBot(u2bot1.UserId)
 
-	err = th.App.disableUserBots(creatorId1)
+	err = th.App.disableUserBots(ownerId1)
 	require.Nil(t, err)
 
 	// Check all bots and corrensponding users are disabled for creator 1

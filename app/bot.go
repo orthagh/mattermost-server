@@ -150,7 +150,7 @@ func (a *App) disableUserBots(userId string) *model.AppError {
 	perPage := 20
 	for {
 		options := &model.BotGetOptions{
-			CreatorId:      userId,
+			OwnerId:        userId,
 			IncludeDeleted: false,
 			OnlyOrphaned:   false,
 			Page:           0,
