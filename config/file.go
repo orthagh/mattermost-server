@@ -23,6 +23,8 @@ var (
 )
 
 // FileStore is a config store backed by a file such as config/config.json.
+//
+// It also uses the folder containing the configuration file for storing other configuration files.
 type FileStore struct {
 	commonStore
 
@@ -166,10 +168,7 @@ func (fs *FileStore) Save() error {
 
 // GetFile fetches the contents of a previously persisted configuration file.
 func (fs *FileStore) GetFile(name string) ([]byte, error) {
-	resolvedPath, err := resolveConfigFilePath(name)
-	if err != nil {
-		return nil, err
-	}
+	resolvedPath := filepath.Join(filepath.Dir(fs.path), name)
 
 	data, err := ioutil.ReadFile(resolvedPath)
 	if err != nil {
@@ -181,12 +180,9 @@ func (fs *FileStore) GetFile(name string) ([]byte, error) {
 
 // SetFile sets or replaces the contents of a configuration file.
 func (fs *FileStore) SetFile(name string, data []byte) error {
-	resolvedPath, err := resolveConfigFilePath(name)
-	if err != nil {
-		return err
-	}
+	resolvedPath := filepath.Join(filepath.Dir(fs.path), name)
 
-	err = ioutil.WriteFile(resolvedPath, data, 0777)
+	err := ioutil.WriteFile(resolvedPath, data, 0777)
 	if err != nil {
 		return errors.Wrapf(err, "failed to write file to %s", resolvedPath)
 	}
@@ -196,12 +192,9 @@ func (fs *FileStore) SetFile(name string, data []byte) error {
 
 // HasFile returns true if the given file was previously persisted.
 func (fs *FileStore) HasFile(name string) (bool, error) {
-	resolvedPath, err := resolveConfigFilePath(name)
-	if err != nil {
-		return false, err
-	}
+	resolvedPath := filepath.Join(filepath.Dir(fs.path), name)
 
-	_, err = os.Stat(resolvedPath)
+	_, err := os.Stat(resolvedPath)
 	if err != nil && os.IsNotExist(err) {
 		return false, nil
 	} else if err != nil {
@@ -213,12 +206,9 @@ func (fs *FileStore) HasFile(name string) (bool, error) {
 
 // RemoveFile removes a previously persisted configuration file.
 func (fs *FileStore) RemoveFile(name string) error {
-	resolvedPath, err := resolveConfigFilePath(name)
-	if err != nil {
-		return err
-	}
+	resolvedPath := filepath.Join(filepath.Dir(fs.path), name)
 
-	err = os.Remove(resolvedPath)
+	err := os.Remove(resolvedPath)
 	if os.IsNotExist(err) {
 		return nil
 	}
